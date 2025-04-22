@@ -1,0 +1,9 @@
+﻿<Window x:Class="PdfToolkitApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PDF Merger" Height="300" Width="200">
+    <StackPanel Margin="20" VerticalAlignment="Center">
+        <Button Content="Select PDF Files" Click="SelectFiles_Click" Margin="0 0 0 10"/>
+        <Button Content="Merge and Save" Click="MergeFiles_Click"/>
+    </StackPanel>
+</Window>
