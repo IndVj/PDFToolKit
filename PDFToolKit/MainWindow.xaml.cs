@@ -31,9 +31,9 @@ namespace PdfToolkitApp
 
         private void MergeFiles_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedFiles == null || selectedFiles.Length == 0)
+            if (selectedFiles == null || selectedFiles.Length < 2)
             {
-                MessageBox.Show("Please select PDF files first.");
+                MessageBox.Show("Please select at least two PDF files to merge.");
                 return;
             }
 
@@ -42,13 +42,6 @@ namespace PdfToolkitApp
                 Filter = "PDF Files (*.pdf)|*.pdf",
                 FileName = "Merged.pdf"
             };
-
-
-            if (selectedFiles.Length > 1)
-            {
-                MessageBox.Show("Please select multiple PDF files.");
-                return;
-            }
 
             if (saveDlg.ShowDialog() == true)
             {
