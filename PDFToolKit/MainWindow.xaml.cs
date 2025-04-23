@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using PDFToolKit.Service;
 using System.Windows;
+using System.Windows.Input;
 
 namespace PdfToolkitApp
 {
@@ -48,6 +49,22 @@ namespace PdfToolkitApp
                 bool success = mergeService.MergeFiles(selectedFiles, saveDlg.FileName);
                 MessageBox.Show(success ? "PDFs merged successfully!" : "Merge failed.");
             }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
         }
     }
 }
