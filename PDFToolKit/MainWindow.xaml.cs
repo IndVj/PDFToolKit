@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using PDFToolKit.Service;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -7,12 +8,15 @@ namespace PdfToolkitApp
 {
     public partial class MainWindow : Window
     {
-        private string[] selectedFiles;
-        private PdfMergeService mergeService = new PdfMergeService();
+        private readonly string[] selectedFiles;
+
+        private readonly PdfMergeService mergeService = new PdfMergeService();
+        public ObservableCollection<string> PdfFiles { get; set; } = new();
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this; 
         }
 
         private void SelectFiles_Click(object sender, RoutedEventArgs e)
@@ -25,8 +29,10 @@ namespace PdfToolkitApp
 
             if (dlg.ShowDialog() == true)
             {
-                selectedFiles = dlg.FileNames;
-                MessageBox.Show($"{selectedFiles.Length} files selected.");
+                foreach (var file in dlg.FileNames)
+                {
+                    if (!PdfFiles.Contains(file)) PdfFiles.Add(file);
+                }
             }
         }
 
@@ -48,6 +54,39 @@ namespace PdfToolkitApp
             {
                 bool success = mergeService.MergeFiles(selectedFiles, saveDlg.FileName);
                 MessageBox.Show(success ? "PDFs merged successfully!" : "Merge failed.");
+            }
+        }
+
+        private void MoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            int selectedIndex = PdfListBox.SelectedIndex;
+            if (selectedIndex > 0)
+            {
+                var item = PdfFiles[selectedIndex];
+                PdfFiles.RemoveAt(selectedIndex);
+                PdfFiles.Insert(selectedIndex - 1, item);
+                PdfListBox.SelectedIndex = selectedIndex - 1;
+            }
+        }
+
+        private void MoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            int selectedIndex = PdfListBox.SelectedIndex;
+            if (selectedIndex >= 0 && selectedIndex < PdfFiles.Count - 1)
+            {
+                var item = PdfFiles[selectedIndex];
+                PdfFiles.RemoveAt(selectedIndex);
+                PdfFiles.Insert(selectedIndex + 1, item);
+                PdfListBox.SelectedIndex = selectedIndex + 1;
+            }
+        }
+
+        private void Remove_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = PdfListBox.SelectedItem as string;
+            if (selectedItem != null)
+            {
+                PdfFiles.Remove(selectedItem);
             }
         }
 
