@@ -2,16 +2,18 @@
 using PDFToolKit.Service;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PdfToolkitApp
 {
     public partial class MainWindow : Window
     {
-        private readonly string[] selectedFiles;
-
         private readonly PdfMergeService mergeService = new PdfMergeService();
         public ObservableCollection<string> PdfFiles { get; set; } = new();
+
+        private Point _dragStartPoint;
+        private object _draggedItem;
 
         public MainWindow()
         {
@@ -31,13 +33,16 @@ namespace PdfToolkitApp
             {
                 foreach (var file in dlg.FileNames)
                 {
-                    if (!PdfFiles.Contains(file)) PdfFiles.Add(file);
+                    if (!PdfFiles.Contains(file)) 
+                        PdfFiles.Add(file);
                 }
             }
         }
 
         private void MergeFiles_Click(object sender, RoutedEventArgs e)
         {
+            var selectedFiles = PdfFiles.ToArray();
+
             if (selectedFiles == null || selectedFiles.Length < 2)
             {
                 MessageBox.Show("Please select at least two PDF files to merge.");
@@ -57,29 +62,83 @@ namespace PdfToolkitApp
             }
         }
 
-        private void MoveUp_Click(object sender, RoutedEventArgs e)
+        private void PdfListBox_DragEnter(object sender, DragEventArgs e)
         {
-            int selectedIndex = PdfListBox.SelectedIndex;
-            if (selectedIndex > 0)
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                var item = PdfFiles[selectedIndex];
-                PdfFiles.RemoveAt(selectedIndex);
-                PdfFiles.Insert(selectedIndex - 1, item);
-                PdfListBox.SelectedIndex = selectedIndex - 1;
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
             }
         }
 
-        private void MoveDown_Click(object sender, RoutedEventArgs e)
+        private void PdfListBox_Drop(object sender, DragEventArgs e)
         {
-            int selectedIndex = PdfListBox.SelectedIndex;
-            if (selectedIndex >= 0 && selectedIndex < PdfFiles.Count - 1)
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                var item = PdfFiles[selectedIndex];
-                PdfFiles.RemoveAt(selectedIndex);
-                PdfFiles.Insert(selectedIndex + 1, item);
-                PdfListBox.SelectedIndex = selectedIndex + 1;
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (var file in files)
+                {
+                    if (System.IO.Path.GetExtension(file).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Assuming PdfFiles is an ObservableCollection<string>
+                        if (!PdfFiles.Contains(file))
+                            PdfFiles.Add(file);
+                    }
+                }
             }
         }
+
+        private void PdfListBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(null);
+            _draggedItem = (sender as ListBox).SelectedItem;
+        }
+
+        private void PdfListBox_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            Point mousePos = e.GetPosition(null);
+            Vector diff = _dragStartPoint - mousePos;
+
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                 Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
+            {
+                if (_draggedItem != null)
+                {
+                    DragDrop.DoDragDrop(PdfListBox, _draggedItem, DragDropEffects.Move);
+                }
+            }
+        }
+
+        private void PdfListBox_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Move;
+            e.Handled = true;
+        }
+
+        private void PdfListBox_DropForReorder(object sender, DragEventArgs e)
+        {
+            if (_draggedItem == null) return;
+
+            var droppedData = _draggedItem;
+            var target = ((FrameworkElement)e.OriginalSource).DataContext;
+
+            if (target == null || target == droppedData) return;
+
+            int removedIdx = PdfFiles.IndexOf(droppedData.ToString());
+            int targetIdx = PdfFiles.IndexOf(target.ToString());
+
+            if (removedIdx >= 0 && targetIdx >= 0)
+            {
+                PdfFiles.Move(removedIdx, targetIdx);
+            }
+        }
+
+
 
         private void Remove_Click(object sender, RoutedEventArgs e)
         {

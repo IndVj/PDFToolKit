@@ -47,13 +47,18 @@
                 <Button Content="Select PDF Files" Click="SelectFiles_Click" Margin="0 0 0 10"/>
 
                 <!-- 📄 List of Selected PDFs -->
-                <ListBox x:Name="PdfListBox" Height="150" Margin="0 0 0 10"
-             ItemsSource="{Binding PdfFiles}"/>
+                <ListBox x:Name="PdfListBox"
+                         Height="150"
+                         Margin="0 0 0 10"
+                         ItemsSource="{Binding PdfFiles}"
+                         AllowDrop="True"
+                         PreviewMouseLeftButtonDown="PdfListBox_PreviewMouseLeftButtonDown"
+                         PreviewMouseMove="PdfListBox_PreviewMouseMove"
+                         Drop="PdfListBox_DropForReorder"
+                         DragOver="PdfListBox_DragOver"/>
 
                 <!-- 🔀 Controls to Rearrange and Remove -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 0 10">
-                    <Button Content="↑ Move Up" Click="MoveUp_Click" Margin="0 5 5 0"/>
-                    <Button Content="↓ Move Down" Click="MoveDown_Click" Margin="0 5 5 0"/>
                     <Button Content="🗑 Remove" Click="Remove_Click"/>
                 </StackPanel>
 

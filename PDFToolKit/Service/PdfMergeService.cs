@@ -10,8 +10,7 @@ namespace PDFToolKit.Service
         public bool MergeFiles(string[] inputFiles, string outputFilePath)
         {
             try
-            {
-               
+            {              
                 using var outputDocument = new PdfDocument();
 
                 foreach (var file in inputFiles)
