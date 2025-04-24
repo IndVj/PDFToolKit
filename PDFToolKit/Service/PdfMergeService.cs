@@ -1,16 +1,15 @@
-﻿using System.IO;
-using PdfSharpCore.Pdf;
+﻿using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
 
 namespace PDFToolKit.Service
 {
     public class PdfMergeService
     {
-       
+
         public bool MergeFiles(string[] inputFiles, string outputFilePath)
         {
             try
-            {              
+            {
                 using var outputDocument = new PdfDocument();
 
                 foreach (var file in inputFiles)
@@ -25,7 +24,7 @@ namespace PDFToolKit.Service
                 }
 
                 outputDocument.Save(outputFilePath);
-               
+
                 return true;
             }
             catch (Exception ex)

@@ -18,7 +18,7 @@ namespace PdfToolkitApp
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = this; 
+            DataContext = this;
         }
 
         private void SelectFiles_Click(object sender, RoutedEventArgs e)
@@ -33,7 +33,7 @@ namespace PdfToolkitApp
             {
                 foreach (var file in dlg.FileNames)
                 {
-                    if (!PdfFiles.Contains(file)) 
+                    if (!PdfFiles.Contains(file))
                         PdfFiles.Add(file);
                 }
             }
@@ -138,14 +138,38 @@ namespace PdfToolkitApp
             }
         }
 
-
-
-        private void Remove_Click(object sender, RoutedEventArgs e)
+        private void MoveItemUp_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItem = PdfListBox.SelectedItem as string;
-            if (selectedItem != null)
+            var item = (sender as Button)?.Tag as string;
+            if (item != null)
             {
-                PdfFiles.Remove(selectedItem);
+                int index = PdfFiles.IndexOf(item);
+                if (index > 0)
+                {
+                    PdfFiles.Move(index, index - 1);
+                }
+            }
+        }
+
+        private void MoveItemDown_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as Button)?.Tag as string;
+            if (item != null)
+            {
+                int index = PdfFiles.IndexOf(item);
+                if (index < PdfFiles.Count - 1)
+                {
+                    PdfFiles.Move(index, index + 1);
+                }
+            }
+        }
+
+        private void RemoveItem_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as Button)?.Tag as string;
+            if (item != null && PdfFiles.Contains(item))
+            {
+                PdfFiles.Remove(item);
             }
         }
 

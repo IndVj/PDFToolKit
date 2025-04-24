@@ -55,13 +55,32 @@
                          PreviewMouseLeftButtonDown="PdfListBox_PreviewMouseLeftButtonDown"
                          PreviewMouseMove="PdfListBox_PreviewMouseMove"
                          Drop="PdfListBox_DropForReorder"
-                         DragOver="PdfListBox_DragOver"/>
+                         DragOver="PdfListBox_DragOver">
 
-                <!-- 🔀 Controls to Rearrange and Remove -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 0 10">
-                    <Button Content="🗑 Remove" Click="Remove_Click"/>
-                </StackPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
+                                <Button Grid.Column="0" Content="↑" Width="25" Margin="2"
+                                     Click="MoveItemUp_Click" Tag="{Binding}"/>
+                                <Button Grid.Column="1" Content="↓" Width="25" Margin="2"
+                                     Click="MoveItemDown_Click" Tag="{Binding}"/>
+                                <Button Grid.Column="2" Content="🗑" Width="25" Margin="2"
+                                     Click="RemoveItem_Click" Tag="{Binding}"/>
+                                <TextBlock Grid.Column="3" Text="{Binding}"                                           
+                                     VerticalAlignment="Center"
+                                     Margin="8 0" TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+
+                </ListBox>
                 <!-- ✅ Merge Button -->
                 <Button Content="Merge and Save" Click="MergeFiles_Click"/>
             </StackPanel>
